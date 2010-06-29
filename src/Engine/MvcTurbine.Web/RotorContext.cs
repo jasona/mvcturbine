@@ -19,19 +19,23 @@
 
 #endregion
 
-namespace MvcTurbine.Web {
+namespace MvcTurbine.Web
+{
     using System;
     using System.Linq;
     using System.Web;
     using Blades;
     using ComponentModel;
     using MvcTurbine.Blades;
+    using System.ComponentModel;
+    using System.ComponentModel.Composition.Hosting;
 
     /// <summary>
     /// Defines the default flow of a <see cref="TurbineApplication"/> instance.
     /// </summary>
     [Serializable]
-    public class RotorContext : IRotorContext {
+    public class RotorContext : IRotorContext
+    {
         private static readonly object _lock = new object();
         private static readonly object _regLock = new object();
         private IAutoRegistrator autoRegistrator;
@@ -41,14 +45,16 @@ namespace MvcTurbine.Web {
         /// <summary>
         /// Default constructor
         /// </summary>
-        public RotorContext(ITurbineApplication application) {
+        public RotorContext(ITurbineApplication application)
+        {
             Application = application;
         }
 
         /// <summary>
         /// Gets or sets the current implementation of <see cref="IServiceLocator"/>.
         /// </summary>
-        public IServiceLocator ServiceLocator {
+        public IServiceLocator ServiceLocator
+        {
             get { return Application.ServiceLocator; }
         }
 
@@ -58,41 +64,62 @@ namespace MvcTurbine.Web {
         public ITurbineApplication Application { get; private set; }
 
         /// <summary>
+        /// Gets the current <see cref="System.ComponentModel.Container"/> associated with
+        /// this instance.
+        /// </summary>
+        public CompositionContainer Container
+        {
+            get { return Application.Container; }
+        }
+
+
+        /// <summary>
         /// Cleans up the current <see cref="IServiceLocator"/> associated with the context.
         /// </summary>
-        public virtual void Dispose() {
+        public virtual void Dispose()
+        {
             BladeList components = GetAllBlades();
 
-            if (components != null) {
-                foreach (IBlade component in components) {
-                    try {
+            if (components != null)
+            {
+                foreach (IBlade component in components)
+                {
+                    try
+                    {
                         //HACK: Yes, I know this is ugly but need to figure out how to best handle this
                         component.Dispose();
-                    } catch {
+                    }
+                    catch
+                    {
                     }
                 }
             }
 
             if (ServiceLocator == null) return;
 
-            try {
+            try
+            {
                 //HACK: Yes, I know this is ugly but need to figure out how to best handle this
                 ServiceLocator.Dispose();
-            } catch {
+            }
+            catch
+            {
             }
         }
 
         /// <summary>
         /// Initializes the current context by auto-registering the default components.
         /// </summary>
-        public virtual void Initialize(ITurbineApplication application) {
+        public virtual void Initialize(ITurbineApplication application)
+        {
             InitializeBlades();
         }
 
         /// <summary>
         /// Executes the current context.
         /// </summary>
-        public virtual void Turn() {
+        public virtual void Turn()
+        {
             // Load assemblies into current AppDomain
             LoadAssembliesIntoAppDomain();
 
@@ -116,11 +143,13 @@ namespace MvcTurbine.Web {
         /// Gets the list of components that are to be used for the application.
         /// </summary>
         /// <returns>A list of the components registered with the application.</returns>
-        public virtual BladeList GetAllBlades() {
+        public virtual BladeList GetAllBlades()
+        {
             var list = new BladeList(CoreBlades.GetBlades());
 
             BladeList commonBlades = GetCommonBlades();
-            if (commonBlades != null) {
+            if (commonBlades != null)
+            {
                 list.AddRange(commonBlades);
             }
 
@@ -131,7 +160,8 @@ namespace MvcTurbine.Web {
         /// Loads the assemblies from the <see cref="HttpRuntime.BinDirectory"/> into the 
         /// <see cref="AppDomain.CurrentDomain"/> to make the auto-registration process work after an AppPool reset.
         /// </summary>
-        protected virtual void LoadAssembliesIntoAppDomain() {
+        protected virtual void LoadAssembliesIntoAppDomain()
+        {
             IBinAssemblyLoader binLoader = GetBinLoader();
             binLoader.LoadAssembliesFromBinFolder();
         }
@@ -139,14 +169,16 @@ namespace MvcTurbine.Web {
         /// <summary>
         /// Initializes the registered <see cref="Blade"/> instances.
         /// </summary>
-        protected virtual void InitializeBlades() {
+        protected virtual void InitializeBlades()
+        {
             PerformBladeAction(blade => blade.Initialize(this));
         }
 
         /// <summary>
         /// Executes the registered <see cref="Blade"/> instances.
         /// </summary>
-        protected virtual void RunBlades() {
+        protected virtual void RunBlades()
+        {
             PerformBladeAction(blade => blade.Spin(this));
         }
 
@@ -155,17 +187,21 @@ namespace MvcTurbine.Web {
         /// <see cref="IBlade"/> in the system.
         /// </summary>
         /// <param name="bladeAction">Action to perform for each <see cref="IBlade"/>.</param>
-        private void PerformBladeAction(Action<IBlade> bladeAction) {
-            if (bladeAction == null) {
+        private void PerformBladeAction(Action<IBlade> bladeAction)
+        {
+            if (bladeAction == null)
+            {
                 return;
             }
 
             BladeList components = GetAllBlades();
-            if (components == null || components.Count == 0) {
+            if (components == null || components.Count == 0)
+            {
                 return;
             }
 
-            foreach (IBlade component in components) {
+            foreach (IBlade component in components)
+            {
                 bladeAction(component);
             }
         }
@@ -174,14 +210,16 @@ namespace MvcTurbine.Web {
         /// Queries all the registered <see cref="IBlade"/> to see if they implement, <see cref="ISupportAutoRegistration"/>
         /// then sets them up
         /// </summary>
-        protected virtual void AutoRegistrationForBlades() {
+        protected virtual void AutoRegistrationForBlades()
+        {
             var registrationList = new AutoRegistrationList();
 
             // For every blade, check if it needs to auto-register anything
             Action<IBlade> autoRegAction = blade =>
             {
                 var autoRegistration = blade as ISupportAutoRegistration;
-                if (autoRegistration == null) {
+                if (autoRegistration == null)
+                {
                     return;
                 }
 
@@ -198,12 +236,17 @@ namespace MvcTurbine.Web {
         /// <summary>
         /// Setup registration for "top" level pieces of the application
         /// </summary>
-        private void AutoRegistrationForContext() {
+        private void AutoRegistrationForContext()
+        {
             var registrationList = new AutoRegistrationList();
 
+            //registrationList
+            //    .Add(Registration.Simple<IServiceRegistration>())
+            //    .Add(Registration.Simple<IBlade>())
+            //    .Add(Registration.Simple<IHttpModule>());
+
+            // Only register the IHttpModules with the container
             registrationList
-                .Add(Registration.Simple<IServiceRegistration>())
-                .Add(Registration.Simple<IBlade>())
                 .Add(Registration.Simple<IHttpModule>());
 
             ProcessAutomaticRegistration(registrationList);
@@ -213,7 +256,8 @@ namespace MvcTurbine.Web {
         /// Gets all the registered <see cref="IBlade"/> instances that are not part of the <see cref="CoreBlades"/> list.
         /// </summary>
         /// <returns></returns>
-        public virtual BladeList GetCommonBlades() {
+        public virtual BladeList GetCommonBlades()
+        {
             var blades = ServiceLocator
                 .ResolveServices<IBlade>()
                 .Where(blade => !blade.IsCoreBlade());
@@ -224,18 +268,16 @@ namespace MvcTurbine.Web {
         /// <summary>
         /// Iterates through all the registered <see cref="IServiceRegistration"/> instances
         /// </summary>
-        protected virtual void ProcessManualRegistrations() {
-            var registrationList = ServiceLocator.ResolveServices<IServiceRegistration>();
-            if (registrationList == null || registrationList.Count == 0) return;
+        protected virtual void ProcessManualRegistrations()
+        {
+            var registrationList = Container.GetExportedValues<IServiceRegistration>();
+            if (registrationList == null || registrationList.Count() == 0) return;
 
-            lock (_regLock) {
-                if (manualRegistrationHasCompleted == false)
+            using (ServiceLocator.Batch())
+            {
+                foreach (var serviceReg in registrationList)
                 {
-                    using (ServiceLocator.Batch())
-                        foreach (IServiceRegistration reg in registrationList)
-                            reg.Register(ServiceLocator);
-
-                    manualRegistrationHasCompleted = true;
+                    serviceReg.Register(ServiceLocator);
                 }
             }
         }
@@ -247,11 +289,14 @@ namespace MvcTurbine.Web {
         /// if one is not registered. 
         /// </summary>
         /// <param name="registrationList">Registrations to process</param>
-        protected virtual void ProcessAutomaticRegistration(AutoRegistrationList registrationList) {
+        protected virtual void ProcessAutomaticRegistration(AutoRegistrationList registrationList)
+        {
             IAutoRegistrator registrator = GetAutoRegistrator();
 
-            lock (_regLock) {
-                if (automaticRegistrationHasCompleted == false){
+            lock (_regLock)
+            {
+                if (automaticRegistrationHasCompleted == false)
+                {
                     using (ServiceLocator.Batch())
                         foreach (ServiceRegistration registration in registrationList)
                             registrator.AutoRegister(registration);
@@ -266,13 +311,20 @@ namespace MvcTurbine.Web {
         /// the default one.
         /// </summary>
         /// <returns></returns>
-        protected virtual IAutoRegistrator GetAutoRegistrator() {
-            if (autoRegistrator == null) {
-                lock (_lock) {
-                    if (autoRegistrator == null) {
-                        try {
+        protected virtual IAutoRegistrator GetAutoRegistrator()
+        {
+            if (autoRegistrator == null)
+            {
+                lock (_lock)
+                {
+                    if (autoRegistrator == null)
+                    {
+                        try
+                        {
                             autoRegistrator = ServiceLocator.Resolve<IAutoRegistrator>();
-                        } catch (ServiceResolutionException) {
+                        }
+                        catch (ServiceResolutionException)
+                        {
                             autoRegistrator = new DefaultAutoRegistrator(ServiceLocator);
                         }
                     }
@@ -287,10 +339,14 @@ namespace MvcTurbine.Web {
         /// <see cref="DefaultBinAssemblyLoader"/>.
         /// </summary>
         /// <returns></returns>
-        protected virtual IBinAssemblyLoader GetBinLoader() {
-            try {
+        protected virtual IBinAssemblyLoader GetBinLoader()
+        {
+            try
+            {
                 return ServiceLocator.Resolve<IBinAssemblyLoader>();
-            } catch {
+            }
+            catch
+            {
                 return new DefaultBinAssemblyLoader();
             }
         }

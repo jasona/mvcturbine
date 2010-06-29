@@ -21,10 +21,13 @@
 
 namespace MvcTurbine.Blades {
     using System;
+using System.ComponentModel.Composition;
 
     /// <summary>
     /// Defines the contract for all blades (components) to use.
     /// </summary>
+    /// 
+    [InheritedExport]
     public interface IBlade : IDisposable {
         /// <summary>
         /// Initializes the blade.

@@ -19,10 +19,13 @@
 
 #endregion
 
+using System.ComponentModel.Composition;
 namespace MvcTurbine.ComponentModel {
     /// <summary>
     /// Provides a simple way register components within your application.
     /// </summary>
+    /// 
+    [InheritedExport]
     public interface IServiceRegistration {
 
         /// <summary>

@@ -25,6 +25,7 @@ namespace MvcTurbine.Web {
     using System.Web;
     using ComponentModel;
     using Properties;
+using System.ComponentModel.Composition.Hosting;
 
     /// <summary>
     /// Class that provides the simple IoC support for ASP.NET MVC.
@@ -32,6 +33,7 @@ namespace MvcTurbine.Web {
     public class TurbineApplication : HttpApplication, ITurbineApplication {
         private static IRotorContext rotorContext;
         private static IServiceLocator serviceLocator;
+        private static CompositionContainer compositionContainer;
 
         /// <summary>
         /// Gets or sets the current implementation of <see cref="IServiceLocator"/>
@@ -48,6 +50,14 @@ namespace MvcTurbine.Web {
         public IRotorContext CurrentContext {
             get { return rotorContext; }
             set { rotorContext = value; }
+        }
+
+        /// <summary>
+        /// Gets the current <see cref="CompositionContainer"/> for the application
+        /// </summary>
+        public CompositionContainer Container {
+            get { return compositionContainer; }
+            set { compositionContainer = value; }
         }
 
         /// <summary>
@@ -77,9 +87,9 @@ namespace MvcTurbine.Web {
             Startup();
 
             ServiceLocator = GetServiceLocator();
+            Container = GetRuntimeContainer();
 
             PostServiceLocatorAcquisition();
-
             TurnRotor();
         }
 
@@ -177,6 +187,11 @@ namespace MvcTurbine.Web {
             }
 
             return locator;
+        }
+
+        protected virtual CompositionContainer GetRuntimeContainer()
+        {
+            return new CompositionContainer();
         }
     }
 }

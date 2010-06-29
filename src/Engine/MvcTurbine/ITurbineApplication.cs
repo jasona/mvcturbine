@@ -21,6 +21,8 @@
 
 namespace MvcTurbine {
     using ComponentModel;
+    using System.ComponentModel;
+    using System.ComponentModel.Composition.Hosting;
 
     /// <summary>
     /// Provides the infrastructure for Turbine flow.
@@ -32,6 +34,11 @@ namespace MvcTurbine {
         /// the application instance will use.
         /// </summary>
         IServiceLocator ServiceLocator { get; set; }
+        
+        /// <summary>
+        /// Gets the container associated with the current instance.
+        /// </summary>
+        CompositionContainer Container { get; }
 
         /// <summary>
         /// Gets or sets the current <see cref="IRotorContext"/> for the application instance to use.

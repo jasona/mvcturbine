@@ -21,10 +21,13 @@
 
 namespace MvcTurbine.Routing {
     using System.Web.Routing;
+    using System.ComponentModel.Composition;
 
     /// <summary>
     /// Provides a simple way to register routes within your application.
     /// </summary>
+    /// 
+    [InheritedExport]
     public interface IRouteRegistrator {
         /// <summary>
         /// Registers routes within <see cref="RouteCollection"/> for the application.

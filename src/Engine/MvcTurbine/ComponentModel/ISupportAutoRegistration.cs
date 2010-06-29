@@ -19,11 +19,14 @@
 
 #endregion
 
+using System.ComponentModel.Composition;
 namespace MvcTurbine.ComponentModel {
 
     /// <summary>
     /// Defines the contract for processing auto-registration within the system.
     /// </summary>
+    /// 
+    [InheritedExport]
     public interface ISupportAutoRegistration {
 
         /// <summary>

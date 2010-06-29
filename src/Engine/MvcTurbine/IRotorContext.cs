@@ -23,6 +23,7 @@ namespace MvcTurbine {
     using System;
     using Blades;
     using ComponentModel;
+    using System.ComponentModel.Composition.Hosting;
 
     /// <summary>
     /// Defines the default flow of a <see cref="ITurbineApplication"/> instance.
@@ -32,6 +33,11 @@ namespace MvcTurbine {
         /// Gets or sets the current implementation of <see cref="IServiceLocator"/>.
         /// </summary>
         IServiceLocator ServiceLocator { get; }
+
+        /// <summary>
+        /// Gets the current container assoicated with the instance.
+        /// </summary>
+        CompositionContainer Container { get; }
 
         /// <summary>
         /// Gets or sets the current instance of <see cref="ITurbineApplication"/>.
