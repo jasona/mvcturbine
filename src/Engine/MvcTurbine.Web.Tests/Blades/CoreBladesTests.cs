@@ -1,6 +1,7 @@
-﻿namespace MvcTurbine.Web.Tests.Blades {
+﻿using MvcTurbine.Web.Blades;
+
+namespace MvcTurbine.Web.Tests.Blades {
     using NUnit.Framework;
-    using Web.Blades;
 
     [TestFixture]
     public class CoreBladesTests {

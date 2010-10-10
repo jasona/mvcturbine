@@ -19,7 +19,8 @@
 
 #endregion
 
-namespace MvcTurbine.Web.Controllers {
+namespace MvcTurbine.Web.Controllers
+{
     using System;
     using System.Collections.Generic;
     using System.Linq;
@@ -30,7 +31,8 @@ namespace MvcTurbine.Web.Controllers {
     /// <summary>
     /// Default implementation for <see cref="IFilterFinder"/> to get all filters through IoC.
     /// </summary>
-    public class DefaultFilterFinder : IFilterFinder {
+    public class DefaultFilterFinder : IFilterFinder
+    {
 
         private IDictionary<Type, IEnumerable<Type>> filterTypes;
 
@@ -38,7 +40,8 @@ namespace MvcTurbine.Web.Controllers {
         /// Default constructor.
         /// </summary>
         /// <param name="serviceLocator"></param>
-        public DefaultFilterFinder(IServiceLocator serviceLocator) {
+        public DefaultFilterFinder(IServiceLocator serviceLocator)
+        {
             ServiceLocator = serviceLocator;
             filterTypes = new Dictionary<Type, IEnumerable<Type>>();
         }
@@ -53,13 +56,15 @@ namespace MvcTurbine.Web.Controllers {
         /// </summary>
         /// <param name="actionDescriptor">Current action being executed.</param>
         /// <returns></returns>
-        public FilterInfo FindFilters(ActionDescriptor actionDescriptor) {
+        public FilterInfo FindFilters(ActionDescriptor actionDescriptor)
+        {
             if (actionDescriptor == null) return null;
 
             return GetGlobalFilters();
         }
 
-        private FilterInfo GetGlobalFilters() {
+        private FilterInfo GetGlobalFilters()
+        {
             var actionFilters = GetGlobalFilterFromContainer<IActionFilter>();
             var resultFilters = GetGlobalFilterFromContainer<IResultFilter>();
             var exceptionFilters = GetGlobalFilterFromContainer<IExceptionFilter>();
@@ -68,7 +73,8 @@ namespace MvcTurbine.Web.Controllers {
             return CreateFilterInfo(authFilters, actionFilters, resultFilters, exceptionFilters);
         }
 
-        private FilterInfo GetInjectableFilters(ICustomAttributeProvider actionDescriptor) {
+        private FilterInfo GetInjectableFilters(ICustomAttributeProvider actionDescriptor)
+        {
             var attributes = GetAttributes(actionDescriptor);
             if (attributes == null || attributes.Length == 0) return null;
 
@@ -86,8 +92,9 @@ namespace MvcTurbine.Web.Controllers {
         /// </summary>
         /// <param name="actionDescriptor"></param>
         /// <returns></returns>
-        private static InjectableFilterAttribute[] GetAttributes(ICustomAttributeProvider actionDescriptor) {
-            return actionDescriptor.GetCustomAttributes(typeof(InjectableFilterAttribute), true) 
+        private static InjectableFilterAttribute[] GetAttributes(ICustomAttributeProvider actionDescriptor)
+        {
+            return actionDescriptor.GetCustomAttributes(typeof(InjectableFilterAttribute), true)
                 as InjectableFilterAttribute[];
         }
 
@@ -102,7 +109,8 @@ namespace MvcTurbine.Web.Controllers {
         protected virtual FilterInfo CreateFilterInfo(IEnumerable<IAuthorizationFilter> authFilters,
                                                       IEnumerable<IActionFilter> actionFilters,
                                                       IEnumerable<IResultFilter> resultFilters,
-                                                      IEnumerable<IExceptionFilter> exceptionFilters) {
+                                                      IEnumerable<IExceptionFilter> exceptionFilters)
+        {
             var registeredFilters = new FilterInfo();
 
             authFilters.ForEach(registeredFilters.AuthorizationFilters.Add);
@@ -120,7 +128,8 @@ namespace MvcTurbine.Web.Controllers {
         /// <param name="filterAttributes"></param>
         /// <returns></returns>
         protected virtual IList<TFilter> GetRegisteredFilters<TFilter>(InjectableFilterAttribute[] filterAttributes)
-            where TFilter : class {
+            where TFilter : class
+        {
             var services = from svc in ServiceLocator.ResolveServices<TFilter>()
                            from filter in filterAttributes
                            where filter.FilterType.IsType<TFilter>()
@@ -152,9 +161,9 @@ namespace MvcTurbine.Web.Controllers {
         private IList<TFilter> ResolveTheCachedTypesForTFilter<TFilter>()
         {
             return filterTypes
-                .Where(x => x.Key == typeof (TFilter))
+                .Where(x => x.Key == typeof(TFilter))
                 .First().Value
-                .Select(x=>ServiceLocator.Resolve(x))
+                .Select(x => ServiceLocator.Resolve(x))
                 .Cast<TFilter>()
                 .ToList();
         }
