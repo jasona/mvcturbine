@@ -65,6 +65,11 @@ namespace MvcTurbine.Ninject
         /// </summary>
         public IKernel Container { get; private set; }
 
+        public IList<object> ResolveServices(Type type)
+        {
+            return Container.GetAll(type).ToList();
+        }
+
         /// <summary>
         /// Gets the associated <see cref="IServiceRegistrar"/> to process.
         /// </summary>
