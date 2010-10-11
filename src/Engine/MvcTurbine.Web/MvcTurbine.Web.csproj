@@ -84,6 +84,7 @@
     </Compile>
     <Compile Include="Blades\BladeExtensions.cs" />
     <Compile Include="Blades\CoreBlades.cs" />
+    <Compile Include="Blades\DependencyResolverBlade.cs" />
     <Compile Include="Blades\MvcBlade.cs" />
     <Compile Include="Blades\RoutingBlade.cs" />
     <Compile Include="Controllers\ControllerExtensions.cs" />
