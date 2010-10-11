@@ -58,24 +58,54 @@ namespace MvcTurbine.Web.Tests.Blades {
         }
 
         [Test]
+        public void DependencyResolver_Blade_Property_Return_Default_DependencyResolver_Blade_Instance()
+        {
+            var result = CoreBlades.DependencyResolver;
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(CoreBlades.DependencyResolver, result);
+        }
+
+        [Test]
+        public void When_DependencyResolver_Blade_Property_Is_Set_To_Null_Return_Default_DependencyResolver_Blade_Instance()
+        {
+            CoreBlades.DependencyResolver = null;
+
+            var result = CoreBlades.DependencyResolver;
+            Assert.IsNotNull(result);
+            Assert.AreEqual(CoreBlades.DependencyResolver, result);
+        }
+
+        [Test]
+        public void When_DependencyResolver_Blade_Property_Is_Set_To_Valid_Hierarchy_Return_Same_Blade_Instance()
+        {
+            var instance = new CustomDependencyResolverBlade();
+            CoreBlades.DependencyResolver = instance;
+
+            Assert.IsNotNull(CoreBlades.DependencyResolver);
+            Assert.AreEqual(CoreBlades.DependencyResolver, instance);
+        }
+
+        [Test]
         public void GetBlades_Returns_Filled_List_By_Default() {
             var result = CoreBlades.GetBlades();
 
             Assert.IsNotNull(result);
             Assert.IsNotEmpty(result);
-            Assert.AreEqual(result.Count, 2);
+            Assert.AreEqual(result.Count, 3);
         }
 
         [Test]
         public void GetBlades_Returns_Filled_List_When_Properties_Are_Null() {
             CoreBlades.Mvc = null;
             CoreBlades.Routing = null;
+            CoreBlades.DependencyResolver = null;
 
             var result = CoreBlades.GetBlades();
 
             Assert.IsNotNull(result);
             Assert.IsNotEmpty(result);
-            Assert.AreEqual(result.Count, 2);
+            Assert.AreEqual(result.Count, 3);
         }
     }
 
@@ -83,5 +113,9 @@ namespace MvcTurbine.Web.Tests.Blades {
     }
 
     internal class CustomRoutingBlade : RoutingBlade {
+    }
+
+    internal class CustomDependencyResolverBlade : DependencyResolverBlade
+    {
     }
 }

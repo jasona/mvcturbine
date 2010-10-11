@@ -19,6 +19,8 @@
 
 #endregion
 
+using System;
+
 namespace MvcTurbine.Web.Blades {
     using MvcTurbine.Blades;
     
@@ -28,6 +30,7 @@ namespace MvcTurbine.Web.Blades {
     public static class CoreBlades {
         private static MvcBlade mvcBlade;
         private static RoutingBlade routingBlade;
+        private static DependencyResolverBlade dependencyResolverBlade;
 
         /// <summary>
         /// Gets or sets the <see cref="MvcBlade"/> instance to use.
@@ -60,11 +63,29 @@ namespace MvcTurbine.Web.Blades {
         }
 
         /// <summary>
+        /// Gets or sets the <see cref="DependencyResolverBlade"/> instance to use.
+        /// </summary>
+        public static DependencyResolverBlade DependencyResolver
+        {
+            get
+            {
+                if (dependencyResolverBlade == null)
+                {
+                    dependencyResolverBlade = new DependencyResolverBlade();
+                }
+
+                return dependencyResolverBlade;
+            }
+
+            set { dependencyResolverBlade = value; }
+        }
+
+        /// <summary>
         /// Gets the registered core blades in a <see cref="BladeList"/>.
         /// </summary>
         /// <returns></returns>
         public static BladeList GetBlades() {
-            return new BladeList { Routing, Mvc};
+            return new BladeList { DependencyResolver, Routing, Mvc};
         }
     }
 }
