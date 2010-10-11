@@ -98,6 +98,7 @@
     <Compile Include="Controllers\TurbineActionInvoker.cs" />
     <Compile Include="Controllers\TurbineControllerFactory.cs" />
     <Compile Include="Controllers\InjectableFilterAttribute.cs" />
+    <Compile Include="Controllers\TurbineDependencyResolver.cs" />
     <Compile Include="Models\IFilterableModelBinder.cs" />
     <Compile Include="Models\TurbineModelBinder.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
