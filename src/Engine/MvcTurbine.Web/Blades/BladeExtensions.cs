@@ -27,18 +27,15 @@ namespace MvcTurbine.Web.Blades {
     /// Helper class for <see cref="IBlade"/> types.
     /// </summary>
     public static class BladeExtensions {
-
         /// <summary>
-        /// Checks whether the specified <see cref="IBlade"/> is a core blade, <see cref="MvcBlade"/> 
+        /// Checks whether the specified <see cref="IBlade"/> is a core blade, <see cref="FilterBlade"/> 
         /// or <see cref="RoutingBlade"/>.
         /// </summary>
         /// <param name="blade"></param>
         /// <returns></returns>
         public static bool IsCoreBlade(this IBlade blade) {
             Type type = blade.GetType();
-
-            return typeof(MvcBlade).IsAssignableFrom(type) ||
-                   typeof(RoutingBlade).IsAssignableFrom(type);
+            return CoreBlades.CoreBladeTypes.Contains(type);
         }
     }
 }
