@@ -49,14 +49,23 @@ namespace MvcTurbine.Web.Blades {
             // Get the current IServiceLocator
             var serviceLocator = GetServiceLocatorFromContext(context);
 
-            var filterProviders = GetFilterProviders(serviceLocator);
-            if (filterProviders != null && filterProviders.Count != 0) {
-                foreach (var filterProvider in filterProviders) {
-                    FilterProviders.Providers.Add(filterProvider);
-                }
-            }
+            SetupFilterProviders(serviceLocator);
+        }
 
-            FilterProviders.Providers.Add(new TurbineFilterProvider(serviceLocator));
+        public virtual void SetupFilterProviders(IServiceLocator serviceLocator) {
+            // Clear out what's there by default
+            FilterProviders.Providers.Clear();
+            
+            FilterProviders.Providers.Add(GlobalFilters.Filters);
+            FilterProviders.Providers.Add(new ControllerInstanceFilterProvider());
+            FilterProviders.Providers.Add(new InjectableAttributeFilterProvider(serviceLocator));
+
+            var filterProviders = GetFilterProviders(serviceLocator);
+            if (filterProviders == null || filterProviders.Count == 0) return;
+
+            foreach (var filterProvider in filterProviders) {
+                FilterProviders.Providers.Add(filterProvider);
+            }
         }
 
         protected virtual IList<IFilterProvider> GetFilterProviders(IServiceLocator locator) {
