@@ -59,7 +59,7 @@ namespace MvcTurbine.Web.Blades {
                 aggregateCache.Merge(binderCache);
             }
 
-            ModelBinderProviders.BinderProviders.Add(new ModelBinderRegistryProvider(serviceLocator) { BinderCache = aggregateCache });
+            ModelBinderProviders.BinderProviders.Add(new ModelBinderRegistryProvider(serviceLocator, aggregateCache));
         }
 
         public virtual void SetupBinderProviders(IServiceLocator serviceLocator) {
